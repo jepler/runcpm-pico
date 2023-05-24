@@ -1,6 +1,10 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+extern int _kbhit(void);
+uint8_t _getch(void);
+void _putch(uint8 ch);
+
 /* see main.c for definition */
 
 uint8 mask8bit = 0x7f;		// TO be used for masking 8 bit characters (XMODEM related)
