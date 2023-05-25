@@ -7,6 +7,9 @@ It is based on:
 It works on a Raspberry Pi Pico (or Pico W). It uses the internal flash
 for storage, and can be mounted as USB storage.
 
+If your Pico is placed on the Pico DV carrier board, you also get a 100x30
+character screen to enjoy your CP/M output on!
+
 First, build for your device. You must
  * Use the Philhower Pico Core
  * In the Tools menu, select
