@@ -1,16 +1,3 @@
-/*
-  SD card connection
-
-  This example shows how to read and write data to and from an SD card file
-  The circuit:
-   SD card attached to SPI bus as follows:
-   // Arduino-pico core
-   ** MISO - Pin 21 - GPIO 16
-   ** MOSI - Pin 25 - GPIO 19
-   ** CS   - Pin 22 - GPIO 17
-   ** SCK  - Pin 24 - GPIO 18
-*/
-
 // only AVR and ARM CPU
 // #include <MemoryFree.h>
 
@@ -27,14 +14,16 @@
 #include <Adafruit_SPIFlash.h>
 #include <Adafruit_TinyUSB.h>
 
+
 // =========================================================================================
 // Board definitions go into the "hardware" folder, if you use a board different than the
 // Arduino DUE, choose/change a file from there and reference that file here
 // =========================================================================================
 
 // Raspberry Pi Pico - normal (LED = GPIO25)
-#include "hardware/pico/pico_internalflash.h"
+#include "hardware/pico/feather_dvi.h"
 
+#include "abstraction_arduino.h"
 // Raspberry Pi Pico W(iFi)   (LED = GPIO32)
 // #include "hardware/pico/pico_w_sd_spi.h"
 
@@ -44,7 +33,6 @@
 #define sDELAY 100
 #define DELAY 1200
 
-#include "abstraction_arduino.h"
 
 // =========================================================================================
 // Serial port speed
@@ -79,7 +67,7 @@ int lst_open = FALSE;
 
 void setup(void) {
   pinMode(LED, OUTPUT);
-  digitalWrite(LED, LOW);
+  digitalWrite(LED, LOW^LEDinv);
 
 
 // =========================================================================================
@@ -102,7 +90,7 @@ void setup(void) {
 //   Serial2.setTX(20); // Pin 26
 // =========================================================================================
 
-  port_init_early();
+  if (!port_init_early()) { return; }
 
   // _clrscr();
   // _puts("Opening serial-port...\r\n");  

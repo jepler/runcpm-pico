@@ -495,13 +495,18 @@ uint32 _HardwareIn(const uint32 Port) {
 /* Console abstraction functions */
 /*===============================================================================*/
 
+#include "arduino_hooks.h"
+
 int _kbhit(void) {
-	return(Serial.available());
+    if (_kbhit_hook && _kbhit_hook()) { return true; }
+    return(Serial.available());
 }
 
 uint8 _getch(void) {
-	while (!Serial.available());
-	return(Serial.read());
+    while(true) {
+        if(_kbhit_hook && _kbhit_hook()) { return _getch_hook(); }
+        if(Serial.available()) { return Serial.read(); }
+    }
 }
 
 uint8 _getche(void) {
@@ -512,6 +517,7 @@ uint8 _getche(void) {
 
 void _putch(uint8 ch) {
 	Serial.write(ch);
+        if(_putch_hook) _putch_hook(ch);
 }
 
 void _clrscr(void) {
