@@ -47,4 +47,14 @@ void _puthex16(uint16 w)	// puts a HHHH hex string
 	_puthex8(w & 0x00ff);
 }
 
+void _putdec(uint16_t w) {
+    char buf[] = "    0";
+    size_t i=sizeof(buf)-1;
+    while(w) {
+        assert(i > 0);
+        buf[--i] = '0' + (w % 10);
+        w /= 10;
+    }
+    _puts(buf);
+}
 #endif

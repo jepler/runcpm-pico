@@ -14,6 +14,8 @@
 #include <Adafruit_SPIFlash.h>
 #include <Adafruit_TinyUSB.h>
 
+#define TEXT_BOLD "\033[1m"
+#define TEXT_NORMAL "\033[0m"
 
 // =========================================================================================
 // Board definitions go into the "hardware" folder, if you use a board different than the
@@ -22,6 +24,10 @@
 
 // Raspberry Pi Pico - normal (LED = GPIO25)
 #include "hardware/pico/feather_dvi.h"
+
+#ifndef BOARD_TEXT
+#define BOARD_TEXT USB_MANUFACTURER " " USB_PRODUCT
+#endif
 
 #include "abstraction_arduino.h"
 // Raspberry Pi Pico W(iFi)   (LED = GPIO32)
@@ -92,6 +98,7 @@ void setup(void) {
 
   if (!port_init_early()) { return; }
 
+#if defined(WAIT_SERIAL)
   // _clrscr();
   // _puts("Opening serial-port...\r\n");  
   Serial.begin(SERIALSPD);
@@ -101,7 +108,7 @@ void setup(void) {
     digitalWrite(LED, LOW^LEDinv);
     delay(DELAY);
   }
-
+#endif
 
 #ifdef DEBUGLOG
   _sys_deletefile((uint8 *)LogName);
@@ -115,49 +122,44 @@ void setup(void) {
   _clrscr();
 
   // if (bootup_press == 1)
-  //   { _puts("Recognized \e[1m#\e[0m key as pressed! :)\r\n\r\n");
+  //   { _puts("Recognized " TEXT_BOLD "#" TEXT_NORMAL " key as pressed! :)\r\n\r\n");
   //   }
   
-  _puts("CP/M Emulator \e[1mv" VERSION "\e[0m   by   \e[1mMarcelo  Dantas\e[0m\r\n");
+  _puts("CP/M Emulator " TEXT_BOLD "v" VERSION "" TEXT_NORMAL "   by   " TEXT_BOLD "Marcelo  Dantas\e[0m\r\n");
   _puts("----------------------------------------------\r\n");  
-  _puts("     running    on   Raspberry Pi [\e[1m Pico \e[0m]\r\n");
+  _puts("    running on [" TEXT_BOLD BOARD_TEXT TEXT_NORMAL "]\r\n");
   _puts("----------------------------------------------\r\n");
-  _puts("\e[0m]\r\n");
 
-	_puts("BIOS              at [\e[1m0x");
+	_puts("BIOS              at [" TEXT_BOLD "0x");
 	_puthex16(BIOSjmppage);
 //	_puts(" - ");
-	_puts("\e[0m]\r\n");
+	_puts("" TEXT_NORMAL "]\r\n");
 
-	_puts("BDOS              at [\e[1m0x");
+	_puts("BDOS              at [" TEXT_BOLD "0x");
 	_puthex16(BDOSjmppage);
-	_puts("\e[0m]\r\n");
+	_puts("" TEXT_NORMAL "]\r\n");
 
-	_puts("CCP " CCPname " at [\e[1m0x");
+	_puts("CCP " CCPname " at [" TEXT_BOLD "0x");
 	_puthex16(CCPaddr);
-	_puts("\e[0m]\r\n");
+	_puts("" TEXT_NORMAL "]\r\n");
 
   #if BANKS > 1
-	_puts("Banked Memory        [\e[1m");
+	_puts("Banked Memory        [" TEXT_BOLD "");
 	_puthex8(BANKS);
-    _puts("\e[0m]banks\r\n");
-  #else
-	_puts("Banked Memory        [\e[1m");
-	_puthex8(BANKS);
-	_puts("\e[0m]bank\r\n");
+    _puts("" TEXT_NORMAL "]banks\r\n");
   #endif
 
-   // Serial.printf("Free Memory          [\e[1m%d bytes\e[0m]\r\n", freeMemory());
+   // Serial.printf("Free Memory          [" TEXT_BOLD "%d bytes" TEXT_NORMAL "]\r\n", freeMemory());
 
-  _puts("CPU-Clock            [\e[1m250Mhz\e[0m]\r\n");
+  _puts("CPU-Clock            [" TEXT_BOLD);
+  _putdec((clock_get_hz( clk_sys ) + 500'000) / 1'000'000);
+  _puts(TEXT_NORMAL "] MHz\r\n");
 
-
-  _puts("Init Storage         [ \e[1m");
+  _puts("Init Storage         [ " TEXT_BOLD "");
   if (port_flash_begin()) {
-    _puts("OK \e[0m]\r\n");
+    _puts("OK " TEXT_NORMAL "]\r\n");
     _puts("----------------------------------------------");
 
-                        
     if (VersionCCP >= 0x10 || SD.exists(CCPname)) {
       while (true) {
         _puts(CCPHEAD);
@@ -190,7 +192,7 @@ void setup(void) {
       _puts("Unable to load CP/M CCP.\r\nCPU halted.\r\n");
     }
   } else {
-    _puts("ERR \e[0m]\r\nUnable to initialize SD card.\r\nCPU halted.\r\n");
+    _puts("ERR " TEXT_NORMAL "]\r\nUnable to initialize SD card.\r\nCPU halted.\r\n");
   }
 }
 

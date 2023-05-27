@@ -26,7 +26,6 @@ Adafruit_USBD_MSC usb_msc; // USB mass storage object
 #define board_pico
 #define board_analog_io
 #define board_digital_io
-#define BOARD "Raspberry Pi Pico (internal storage)"
 
 // FUNCTIONS REQUIRED FOR USB MASS STORAGE ---------------------------------
 
@@ -95,8 +94,6 @@ bool port_init_early() {
   if (!usb_msc.begin()) {
       _puts("!usb_msc.begin()"); return false;
   }
-  display.printf("port_early_init success! block device size %d\n",
-          (int)blockdevice.sectorCount());
   return true;
 }
 
